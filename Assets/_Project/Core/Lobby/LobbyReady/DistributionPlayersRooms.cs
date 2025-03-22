@@ -12,7 +12,6 @@ namespace Core.LobbyReady
 
         public override void OnEnable()
         {
-            ReassignmentRoomPlayers();
             PhotonNetwork.AutomaticallySyncScene = true;
             _lobbyReadySystem.AllPlayersReady += DistributePlayersToRooms;
         }
@@ -29,34 +28,5 @@ namespace Core.LobbyReady
                 PhotonNetwork.LoadLevel($"{_nameLoadScene}");
             }
         }
-        private void ReassignmentRoomPlayers()
-        {
-                int roomIndex = 0;
-                
-                foreach (Player player in PhotonNetwork.PlayerList)
-                {
-                    // Проверяем, установлен ли RoomIndex у игрока
-                    if (!player.CustomProperties.ContainsKey("RoomIndex"))
-                    {
-                        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable
-                        {
-                            { "RoomIndex", roomIndex } 
-                        };
-                        player.SetCustomProperties(props);
-                        roomIndex++;
-                    }
-                }
-        }
-
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-        {
-            ReassignmentRoomPlayers();
-        }
-
-        public override void OnPlayerEnteredRoom(Player newPlayer)
-        {
-            ReassignmentRoomPlayers();
-        }
-
     }
 }

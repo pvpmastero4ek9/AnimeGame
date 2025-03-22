@@ -13,22 +13,24 @@ namespace Core.PlayersSpawn
 
         private void Start() 
         {
-            StartCoroutine(WaitForRoomIndexAndSpawn());
+            SpawnPlayer();
         }
 
-        private IEnumerator WaitForRoomIndexAndSpawn()
+        private void SpawnPlayer()
         {
-            // Ждем, пока RoomIndex не появится
-            while (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("RoomIndex"))
+            int roomIndex = 0;
+            foreach (Player player in PhotonNetwork.PlayerList)
             {
-                yield return null; // Ждём, пока RoomIndex синхронизируется
+                if (player == PhotonNetwork.LocalPlayer)
+                {
+                    Vector3 spawnPosition = _spawnPointsPlayers[roomIndex].position;
+
+                    PhotonNetwork.Instantiate(_player.name, spawnPosition, Quaternion.identity);
+                    break;
+                }
+
+                roomIndex++;
             }
-
-            int roomIndex = (int)PhotonNetwork.LocalPlayer.CustomProperties["RoomIndex"];
-            Debug.Log(roomIndex);
-            Vector3 spawnPosition = _spawnPointsPlayers[roomIndex].position;
-
-            PhotonNetwork.Instantiate(_player.name, spawnPosition, Quaternion.identity);
         }
     }
 }
